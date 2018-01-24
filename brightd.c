@@ -45,6 +45,7 @@
 #include <pwd.h>
 #include <regex.h>
 #include <signal.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/inotify.h>
@@ -58,17 +59,17 @@
 
 /* Overall program settings {{{ */
 #ifdef DEBUG
-char verbose = 1;
+bool verbose = true;
 #else
-char verbose = 0;
+bool verbose = false;
 #endif
-char daemonize = 0;
-char force = 0;
+bool daemonize = false;
+int force = 0;
 int waitSeconds = 3;
 int darkBright = 0;
 int maxBright = 0;
 
-char isDark = 0;
+bool isDark = false;
 int savedLevel = 0;
 int beforeFade = 0;
 
@@ -99,7 +100,7 @@ void signalHandlerAlarm(int sig);
  * Write an error to stderr and exit
  */
 void error(char *str) { /* {{{ */
-  if (daemonize != 1) {
+  if (!daemonize) {
     fputs(str, stderr);
     fputs("\n", stderr);
 
@@ -123,7 +124,7 @@ void error(char *str) { /* {{{ */
  * Write an debug message to the console
  */
 void info(char *str) { /*{{{*/
-  if (verbose == 1 && daemonize == 0) {
+  if (verbose && !daemonize) {
     printf("%s\n", str);
   }
 } /*}}}*/
@@ -303,7 +304,7 @@ void loadDefaultClass() /*{{{*/
         continue;
       }
       strcpy(b_class, dirEntry->d_name);
-      if (verbose == 1) {
+      if (verbose) {
         printf("Using brightness class %s\n", b_class);
       }
       closedir(backlightDir);
@@ -332,7 +333,7 @@ void signalHandlerAlarm(int sig) { /*{{{*/
   /* Reenable the handler */
   signal(sig, signalHandlerAlarm);
 
-  if (isDark == 0) {
+  if (!isDark) {
     /* Check if fading is okay */
     if (isOnAC() && force < 2) {
       info("Would fade, but on AC");
@@ -357,7 +358,7 @@ void signalHandlerAlarm(int sig) { /*{{{*/
     beforeFade = getBrightness();
     savedLevel = darkBright;
     setBrightness(darkBright);
-    isDark = 1;
+    isDark = true;
   }
   return;
 } /*}}}*/
@@ -369,36 +370,36 @@ void handleReceivedEvent() { /*{{{*/
   alarm(waitSeconds);
 
   /* Fade back to light */
-  if (isDark == 1) {
+  if (isDark)  {
     level = getBrightness();
     if (level > beforeFade) {
       savedLevel = level;
-      isDark = 0;
+      isDark = false;
       return;
     }
-    if (verbose == 1 && daemonize == 0) {
+    if (verbose && !daemonize) {
       printf("Fading to light (level %d)\n", beforeFade);
     }
     savedLevel = beforeFade;
     setBrightness(beforeFade);
-    isDark = 0;
+    isDark = false;
   }
 } /*}}}*/
 
 void userChangedBrightness(int toLevel) { /*{{{*/
-  if (verbose == 1 && daemonize == 0) {
+  if (verbose && !daemonize) {
     printf("User changed brightness level to %d\n", toLevel);
   }
 
   /* Reset alarm */
   alarm(waitSeconds);
 
-  if (isDark == 1 && toLevel > darkBright) {
+  if (isDark && toLevel > darkBright) {
     /* Fade to max immediately */
     info("Maximum lightness, because user increased brightness");
     setBrightness(maxBright);
     savedLevel = maxBright;
-    isDark = 0;
+    isDark = false;
   }
   if (toLevel < darkBright) {
     /* Deny this */
@@ -468,7 +469,7 @@ int main(int argc, char *argv[]) { /*{{{*/
 #endif
     switch (option) {
     case 'v': /* Verbose */
-      verbose = 1;
+      verbose = true;
       break;
     case 'w': /* Wait n seconds before fading */
       waitSeconds = atoi(optarg);
@@ -477,7 +478,7 @@ int main(int argc, char *argv[]) { /*{{{*/
       }
       break;
     case 'd': /* Daemonize */
-      daemonize = 1;
+      daemonize = true;
       break;
     case 'P': /* Location of pid file */
       if (strlen(optarg) > 250) {
@@ -555,7 +556,7 @@ int main(int argc, char *argv[]) { /*{{{*/
   sprintf(actualBrightnessFile, "/sys/class/backlight/%s/max_brightness",
           b_class);
   maxBright = getBrightness();
-  if (verbose == 1 && daemonize == 0) {
+  if (verbose && !daemonize) {
     printf("Maximum brightness is %d\n", maxBright);
   }
   sprintf(actualBrightnessFile, "/sys/class/backlight/%s/actual_brightness",
@@ -633,7 +634,7 @@ int main(int argc, char *argv[]) { /*{{{*/
 
 /* Daemonize */
 #ifndef DEBUG
-  if (daemonize == 1) {
+  if (daemonize) {
     daemon(0, 0);
   }
 #endif
@@ -666,7 +667,7 @@ int main(int argc, char *argv[]) { /*{{{*/
           strncpy(buf, inotifyEvent->name, 3);
           buf[0] = ':';
           buf[2] = 0;
-          if (verbose == 1 && daemonize == 0) {
+          if (verbose && !daemonize) {
             printf("Found X-Server '%s'; I will try to open a connection to it "
                    "every 5 seconds\n",
                    buf);
@@ -797,7 +798,7 @@ int main(int argc, char *argv[]) { /*{{{*/
         printf("%d: %s\n", fd, buf2);
 #endif
         if (fd == -1) {
-          if (verbose == 1 && daemonize == 0) {
+          if (verbose && !daemonize) {
             printf("Failed to open %s\n", buf2);
           }
         } else {
