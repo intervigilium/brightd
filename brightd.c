@@ -121,7 +121,7 @@ void error(char *str) { /* {{{ */
 /*
  * Write an debug message to the console
  */
-inline void info(char *str) { /*{{{*/
+void info(char *str) { /*{{{*/
 	if(verbose == 1 && daemonize == 0) {
 		printf("%s\n", str);
 	}
@@ -307,7 +307,7 @@ void loadDefaultClass() /*{{{*/
 /*
  * Event source filter
  */
-inline char isEventFileValid(char *file) { /* {{{ */
+char isEventFileValid(char *file) { /* {{{ */
 	if(*((char*)&eventSourceFilter) == 0) {
 		return 1;
 	}
