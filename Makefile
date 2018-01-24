@@ -14,7 +14,7 @@ endif
 all: brightd brightd.1
 
 brightd: brightd.c
-	gcc $(CFLAGS) $(A_CFLAGS) -o $@ $@.c
+	gcc $(CFLAGS) -o $@ $@.c $(A_CFLAGS)
 
 brightd.1:
 	sed -re 's/^\.nr no_x11 [01]/.nr no_x11 $(MAN_NO_X11)/' brightd.1.tpl > brightd.1
