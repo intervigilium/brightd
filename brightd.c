@@ -66,8 +66,8 @@ int  darkBright  = 0;
 int  maxBright	 = 0;
 
 char isDark	 = 0;
-char savedLevel  = 0;
-char beforeFade  = 0;
+int savedLevel = 0;
+int beforeFade = 0;
 
 char pidfile[255];
 
