@@ -427,9 +427,6 @@ void make_pidfile(char *pidfile) {
  * The main program
  */
 int main(int argc, char *argv[]) { /*{{{*/
-  int defaultBrightness = 0;
-  int oldBrightness = 0;
-  int newBrightness = 0;
   int highFd = 0;
 #ifdef X11
   int noXCode = 0;
@@ -561,9 +558,6 @@ int main(int argc, char *argv[]) { /*{{{*/
   }
   sprintf(actualBrightnessFile, "/sys/class/backlight/%s/actual_brightness",
           b_class);
-
-  /* Load brightness */
-  defaultBrightness = newBrightness = oldBrightness = getBrightness();
 
   /* Open all event files */
   FD_ZERO(&openfds);
