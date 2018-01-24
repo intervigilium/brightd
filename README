@@ -1,0 +1,107 @@
+BRIGHTNESS CONTROL DAEMON
+----------------------------------------------------------------
+
+CHANGES IN 0.4
+	Brightd 0.4 introduces some major changes, so I'll write some
+	information on the new system here.
+
+	d-tick <jid:d-tick@jabber.zankt.net> noticed that the old code
+	caused a huge number of CPU wakeups per second. While this makes
+	the fading and reaction look quite cool, it's something quite#
+	underisable for battery live time.
+
+	Starting with this version of brightd the program calculates idle
+	times based on input on /dev/input/event* using select(2) and
+	alarm(2). xscreensaver times are honored furthermore, but not
+	pulled every few ms. Also, the brightness setting doesn't get
+	pulled anymore, which means you'll have to tell your acpid script
+	to notify brightd of any changes to the brightness. To achieve
+	this, brightd creates a FIFO into which you may echo the new
+	brightness setting.
+
+	In my case (Thinkpad R51) the lines I had to put into
+	/etc/acpi/default.sh were
+	  
+	  if [ "${ACTION}" == "brightness" ]; then
+		  echo -n "0$[${PARAMETER} / 14]" > /var/tmp/.brightd
+	  fi
+
+	(acpid reported the brightness in a range between 0 and 100 while
+	 brightd expects to get the levels from sysfs, who are between 0 and
+	 7)
+
+	Also note that you'll have to start brightd as root now, because
+	other users don't have read permission on /dev/input/event*.
+	Brightd will wait for X11 per default now, but you may deactivate
+	the whole X11 interaction using -x now.
+
+	"But don't you worry" - it will drop it's privileges as soon as it
+	has opened all necessary files. If you drop privileges to a user
+	also having read access to /dev/input, brightd will automatically
+	open new files in that directory upon creation (pe when you attach
+	an USB mouse)
+
+PREREQUISITES
+	A recent kernel with an extension providing access to your LCD's
+	brightness controls through /sys/class/backlight.
+	The kernel must have CONFIG_INPUT_EVDEV enabled (which is default)
+
+	For example, IBM thinkpad owners should have CONFIG_IBM_ACPI set.
+
+	Additionally, users should have write permissions:
+		chmod g+w /sys/class/backlight/*/brightness
+		chgrp users /sys/class/backlight/*/brightness
+	You might have to put this in your init.d or so
+
+COMPILING
+	If compiled with x11 support brightd needs X11 and the
+	X11 screensaver extensions (libXss) installed.
+
+	Simply change into the source directory and type "make" to
+	compile it. The output executable will be called "brightd".
+
+INSTALLATION
+	Copy brightd to some directory inside your $PATH (like
+	/usr/local/bin). Put it into an init script and enjoy.
+
+USAGE
+	See the manpage.
+
+Q&A
+  
+  BRIGHTD STARTS, BUT DOES NOT WORK
+	brightd will not work in three situations. If you intend to test
+	it, avoid those:
+		- brightd won't do anything when xscreensaver is
+		  deaktivated. (This prevents the screen to go dark when
+		  you're watching a movie)
+		- It won't do anything when AC is plugged in.
+		- It won't do anything either when the highest brightness
+		  level is chosen.
+	Use "-f" to override the latter two.
+
+  BRIGHTD STARTS, BUT DOES NOT CONNECT TO X11
+	Make sure your auth settings allow clients started on the same
+	machine by root to connect to X11. For gdm users, starting brightd
+	with
+	 XAUTHORITY="/var/gdm/:0.Xauth" brightd ...
+	might help.
+
+  MY SYNAPTICS TOUCHPAD ISN'T RECOGNIZED
+	Sadly, synaptics does not create a device in /dev/input; if you
+	want to have events from your touchpad considered, use brightd < 0.3.
+
+LICENSE
+	GPL, of course. See gpl.txt
+
+AUTHOR
+	Phillip Berndt
+	www.pberndt.com
+
+	Please excuse any language mistakes. I'm no native english
+	speaker ;)
+
+CONTRIBUTORS
+	Richard Weinberger <richard at nod dot at>
+	Hannes von Haugwitz <hannes at vonhaugwitz dot com>	
+

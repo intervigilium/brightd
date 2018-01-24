@@ -1,0 +1,103 @@
+* brightd-0.4.1 (18. Oct 2008)
+
+18. Oct 2008; Phillip Berndt brightd.{1,x11_no_x11} Makefile
+ Merged manpages into one (using groff conditions)
+ /sbin | /bin optional in Makefile
+
+18. Oct 2008; Hannes von Haugwitz brightd.{c,1.x11,1.no_x11} Makefile:
+ Fixed bug with pidfile creation in daemon mode
+ Added different manpages for x11 and no x11 mode
+ Some additional changes in Makefile
+
+* brightd-0.4 (17. Oct 2008)
+
+17. Oct 2008; Hannes von Haugwitz brightd.{c,1} Makefile:
+ Added `-P' for PID-file creation
+ X11 support is optional from now on (but enabled by default in Makefile)
+ Some minor fixes
+
+17. Sep 2007; Richard Weinberger brightd.c:
+ Removed useless argc == 0 block
+
+* brightd-0.4_beta4 (21. Jul 2007)
+
+21. Jul 2007; Phillip Berndt brightd.c brightd.1:
+ -e does not need to contain event anymore, since
+ some people do not have event files
+
+09. Jul 2007; Phillip Berndt brightd.c brightd.1:
+ Brightness file is only opened once now
+
+* brightd-0.3_beta2 (08. July 2007)
+
+08. Jul 2007; Phillip Berndt brightd.c:
+ Modified tge way -f works, can be used twice now
+
+08. Jul 2007; Phillip Berndt brightd.c brightd.1:
+ event sources may now be filtered to prevent brightd from using undesired
+ sources such as hdaps (reported by
+ Hannes von Haugwitz <hannes@vonhaugwitz.com>)
+ Also brightd will now attempt to connect to an open X-server
+ before waiting for one to appear
+
+* brightd-0.4_beta2 (07. July 2007)
+
+07. Jul 2007; Phillip Berndt brightd.c:
+ Fading must not be that fast as the kernel's backend seems
+ to be too slow
+
+* brightd-0.4_beta1 (06. July 2007)
+
+06. July 2007; Phillip Berndt brightd.c:
+ Rewrote nearly the entire code to implement the
+ new exterimental stuff. This code should raise
+ nearly no cpu wakeups anymore
+ 
+ Since this is a big change, I'll release this
+ as 0.4_beta1 and skip 0.3.
+
+05. July 2007; Phillip Berndt brightd.c:
+ Switched to an experimental branch:
+  The code will now use /dev/input/event* to
+  check for user activity
+
+05. May 2007; Phillip Berndt brightd.c:
+ Added a -x parameter which will cause brightd
+ to wait for an X11-session to be opened if it
+ does not find one.
+
+29. Apr 2007; Phillip Berndt brightd.c:
+ Fixed some typos
+
+28. Apr 2007; Phillip Berndt brightd.c:
+ Fixed a minor bug which produced a warning when
+ compiling with -Wall
+
+28. Apr 2008; Phillip Berndt Makefile:
+ brightd will now be built with debugging information
+ by default and will use any $CFLAGS specified in the
+ environment
+
+*brightd-0.2 (26. Apr 2007)
+
+26. Apr 2007; Phillip Berndt brightd.c:
+ The default class is no longer "ibm" but the first
+ directory entry in the backlight directory
+ Since 2.6.22 will rename the "ibm" class, I'll
+ release this as 0.2 now.
+
+26. Apr 2007; Phillip Berndt brightd.1:
+ Replaced 1000 µs with 1 ms to prevent encoding
+ problems on non-unicode systems
+
+*brightd-0.1 (15. Apr 2007)
+
+15. Apr 2007; Phillip Berndt brightd.c:
+ brightd does use the sys-Interface now.
+ (Thanks to Evgeni Golov <sargentd at die-welt dot net> for reporting)
+ Added a manpage
+
+26 Feb 2007; Phillip Berndt brightd.c:
+ Fixed a typo
+ Added #include <string.h> to remove a warning
+ (Thanks to Thomas Ohms for reporting.)
