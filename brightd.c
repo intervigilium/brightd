@@ -36,6 +36,9 @@
 #include <X11/extensions/scrnsaver.h>
 #endif
 #include <dirent.h>
+#ifdef DEBUG
+#include <errno.h>
+#endif
 #include <fcntl.h>
 #include <glob.h>
 #include <pthread.h>
@@ -101,7 +104,6 @@ void error(char *str) { /* {{{ */
     fputs("\n", stderr);
 
 #ifdef DEBUG
-#include <errno.h>
     printf("libc says: %s\n", strerror(errno));
 #endif
   }
