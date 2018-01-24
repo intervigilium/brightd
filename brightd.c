@@ -142,7 +142,7 @@ int getBrightness() { /*{{{*/
           "ACPI extensions for the class supplied using -c in your kernel?");
   }
   fgets(line, 255, brightness);
-  retVal = atoi(line);
+  retVal = strtol(line, NULL, 10);
   fclose(brightness);
 
   return retVal;
@@ -472,7 +472,7 @@ int main(int argc, char *argv[]) { /*{{{*/
       verbose = true;
       break;
     case 'w': /* Wait n seconds before fading */
-      waitSeconds = atoi(optarg);
+      waitSeconds = strtol(optarg, NULL, 10);
       if (waitSeconds <= 0) {
         printHelp();
       }
@@ -496,7 +496,7 @@ int main(int argc, char *argv[]) { /*{{{*/
       }
       break;
     case 'b': /* Darkest setting */
-      darkBright = atoi(optarg);
+      darkBright = strtol(optarg, NULL, 10);
       if (darkBright < 0 || darkBright > 5) {
         printHelp();
       }
@@ -761,7 +761,7 @@ int main(int argc, char *argv[]) { /*{{{*/
 #ifdef DEBUG
           printf("Fifo said: %s\n", buf);
 #endif
-          i = atoi(buf);
+          i = strtol(buf, NULL, 10);
           if (savedLevel != i && lastFade + 1 < time(NULL)) {
             userChangedBrightness(i);
           }
