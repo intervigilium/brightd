@@ -1,0 +1,11 @@
+[Unit]
+Description=Brightd brightness daemon
+
+[Service]
+Type=forking
+ExecStart=/usr/bin/brightd -c intel_backlight -d -x -w 20 -u nobody -b 1 -f -f -v -P /var/run/brightd.pid
+PIDFile=/var/run/brightd.pid
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target
