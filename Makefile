@@ -1,5 +1,5 @@
 PREFIX=$(DESTDIR)/usr
-BINDIR=bin/
+BINDIR=bin
 #NO_X11=1  # (Uncomment this to disable X11 Support)
 
 PACKAGE_VERSION=`awk '/RELEASE/ {print $$3}' brightd.c | tr -d \" | head -n1`
