@@ -21,6 +21,7 @@ brightd.1:
 
 install:
 	install -Ds brightd $(PREFIX)/$(BINDIR)/brightd
+	install -D brightd.service /lib/systemd/system/brightd.service
 	install -D brightd.1 $(PREFIX)/share/man/man1/brightd.1
 
 uninstall:
